@@ -1,0 +1,4 @@
+/home/rohit/Test/build/CMakeFiles/Test_lib.dir
+/home/rohit/Test/build/CMakeFiles/Test.dir
+/home/rohit/Test/build/CMakeFiles/edit_cache.dir
+/home/rohit/Test/build/CMakeFiles/rebuild_cache.dir
