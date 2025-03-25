@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/rohit/Test
+CMAKE_SOURCE_DIR = /home/rohit/Documents/arctano/eprosium/veto_box
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/rohit/Test/build
+CMAKE_BINARY_DIR = /home/rohit/Documents/arctano/eprosium/veto_box/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rohit/Test/build/CMakeFiles /home/rohit/Test/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rohit/Documents/arctano/eprosium/veto_box/build/CMakeFiles /home/rohit/Documents/arctano/eprosium/veto_box/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/rohit/Test/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/rohit/Documents/arctano/eprosium/veto_box/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
