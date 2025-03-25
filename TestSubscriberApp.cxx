@@ -121,38 +121,19 @@ void TestSubscriberApp::on_subscription_matched(
     }
 }
 
-  // In subscriber, you could also display the message content:
-  void TestSubscriberApp::on_data_available(DataReader* reader)
-  {
-      Test sample_;
-      SampleInfo info;
-      while ((!is_stopped()) && (RETCODE_OK == reader->take_next_sample(&sample_, &info)))  
-      {
-          if ((info.instance_state == ALIVE_INSTANCE_STATE) && info.valid_data)
-          {
-              std::cout << "Received raw message: " << sample_.msg() << std::endl;
-              
-              // Parse the string back into KeyDataModule (optional)
-              try {
-                  std::string msg = sample_.msg();
-                  size_t k1_pos = msg.find("k1:");
-                  size_t k2_pos = msg.find("k2:");
-                  size_t k3_pos = msg.find("k3:");
-                  
-                  int k1 = std::stoi(msg.substr(k1_pos+3, msg.find(',', k1_pos)-(k1_pos+3)));
-                  int k2 = std::stoi(msg.substr(k2_pos+3, msg.find(',', k2_pos)-(k2_pos+3)));
-                  int k3 = std::stoi(msg.substr(k3_pos+3));
-                  
-                  std::cout << "Parsed values - k1: " << k1 
-                            << ", k2: " << k2 
-                            << ", k3: " << k3 << std::endl;
-              }
-              catch (...) {
-                  std::cerr << "Error parsing message" << std::endl;
-              }
-          }
-      }
-  }
+void TestSubscriberApp::on_data_available(
+        DataReader* reader)
+{
+    Test sample_;
+    SampleInfo info;
+    while ((!is_stopped()) && (RETCODE_OK == reader->take_next_sample(&sample_, &info)))
+    {
+        if ((info.instance_state == ALIVE_INSTANCE_STATE) && info.valid_data)
+        {
+            std::cout << "Sample '" << std::to_string(++samples_received_) << "' RECEIVED" << std::endl;
+        }
+    }
+}
 
 void TestSubscriberApp::run()
 {

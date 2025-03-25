@@ -31,7 +31,7 @@
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
-#include <fastdds/rtps/common/Locator.hpp>
+
 #include "TestPubSubTypes.hpp"
 
 using namespace eprosima::fastdds::dds;
@@ -47,81 +47,52 @@ TestPublisherApp::TestPublisherApp(
     , matched_(0)
     , samples_sent_(0)
     , stop_(false)
+{
+    //
+
+    // Create the participant
+    DomainParticipantQos pqos = PARTICIPANT_QOS_DEFAULT;
+    pqos.name("Test_pub_participant");
+    factory_ = DomainParticipantFactory::get_shared_instance();
+    participant_ = factory_->create_participant(domain_id, pqos, nullptr, StatusMask::none());
+    if (participant_ == nullptr)
     {
-        // Get local IP address (replace with your actual IP)
-        std::string local_ip = "192.168.1.100"; // Or use a method to get local IP
-        
-        // Create participant with specific QoS
-        DomainParticipantQos pqos = PARTICIPANT_QOS_DEFAULT;
-        pqos.name("Test_pub_participant");
-        
-        // Configure discovery to use specific IP
-        pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.clear();
-        eprosima::fastdds::rtps::Locator_t meta_locator;
-        meta_locator.kind = LOCATOR_KIND_UDPv4;
-        meta_locator.port = 7400;  // Default discovery port
-        eprosima::fastdds::rtps::IPLocator::setIPv4(meta_locator, local_ip);
-        pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(meta_locator);
-        
-        // Disable multicast for discovery
-        pqos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
-    
-        factory_ = DomainParticipantFactory::get_shared_instance();
-        participant_ = factory_->create_participant(domain_id, pqos);
-        
-        // Register type
-        type_.register_type(participant_);
-    
-        // Create publisher
-        PublisherQos pub_qos = PUBLISHER_QOS_DEFAULT;
-        publisher_ = participant_->create_publisher(pub_qos);
-    
-        // Create topic
-        TopicQos topic_qos = TOPIC_QOS_DEFAULT;
-        topic_ = participant_->create_topic("TestTopic", type_.get_type_name(), topic_qos);
-    
-        // Configure DataWriter QoS for visible traffic
-        DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
-        
-        // Reliability settings
-        writer_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-        writer_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
-        writer_qos.history().kind = KEEP_ALL_HISTORY_QOS;
-        
-        // Configure unicast locators using IPLocator
-        writer_qos.endpoint().unicast_locator_list.clear();
-        eprosima::fastdds::rtps::Locator_t uni_loc;
-        uni_loc.kind = LOCATOR_KIND_UDPv4;
-        uni_loc.port = 7412;  // Choose a specific port
-        
-        // Set IP using IPLocator methods
-        if (!eprosima::fastdds::rtps::IPLocator::setIPv4(uni_loc, local_ip))
-        {
-            throw std::runtime_error("Failed to set IPv4 address");
-        }
-        writer_qos.endpoint().unicast_locator_list.push_back(uni_loc);
-        
-        // Clear multicast locators
-        writer_qos.endpoint().multicast_locator_list.clear();
-        
-        // Force synchronous publishing
-        writer_qos.publish_mode().kind = SYNCHRONOUS_PUBLISH_MODE;
-        
-        // Disable data sharing (which might use shared memory)
-        writer_qos.data_sharing().off();
-    
-        // Create writer
-        writer_ = publisher_->create_datawriter(topic_, writer_qos, this, StatusMask::all());
-        
-     
-        // Print configured locators for debugging
-        EPROSIMA_LOG_INFO(PUBLISHER, "Configured locators:");
-        for (const auto& loc : writer_qos.endpoint().unicast_locator_list)
-        {
-            EPROSIMA_LOG_INFO(PUBLISHER, "  " << eprosima::fastdds::rtps::IPLocator::to_string(loc));
-        }
+        throw std::runtime_error("Test Participant initialization failed");
     }
-    
+
+    // Register the type
+    type_.register_type(participant_);
+
+    // Create the publisher
+    PublisherQos pub_qos = PUBLISHER_QOS_DEFAULT;
+    participant_->get_default_publisher_qos(pub_qos);
+    publisher_ = participant_->create_publisher(pub_qos, nullptr, StatusMask::none());
+    if (publisher_ == nullptr)
+    {
+        throw std::runtime_error("Test Publisher initialization failed");
+    }
+
+    // Create the topic
+    TopicQos topic_qos = TOPIC_QOS_DEFAULT;
+    participant_->get_default_topic_qos(topic_qos);
+    topic_ = participant_->create_topic("TestTopic", type_.get_type_name(), topic_qos);
+    if (topic_ == nullptr)
+    {
+        throw std::runtime_error("Test Topic initialization failed");
+    }
+
+    // Create the data writer
+    DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
+    publisher_->get_default_datawriter_qos(writer_qos);
+    writer_qos.reliability().kind = ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS;
+    writer_qos.durability().kind = DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS;
+    writer_qos.history().kind = HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+    writer_ = publisher_->create_datawriter(topic_, writer_qos, this, StatusMask::all());
+    if (writer_ == nullptr)
+    {
+        throw std::runtime_error("Test DataWriter initialization failed");
+    }
+}
 
 TestPublisherApp::~TestPublisherApp()
 {
@@ -173,6 +144,8 @@ void TestPublisherApp::run()
             KeyDataModule obj(10, 20, 30);
 
             // Display object values
+            obj.display();
+
             // Optional: If you need to send/process obj in some way
             processKeyData(obj);
         }
@@ -193,37 +166,26 @@ void TestPublisherApp::processKeyData(const KeyDataModule& data)
     data.display();
 }
 
+
 bool TestPublisherApp::publish()
 {
-    if (!writer_) {
-        std::cerr << "Error: DataWriter is null!" << std::endl;
-        return false;
-    }
     bool ret = false;
+    // Wait for the data endpoints discovery
     std::unique_lock<std::mutex> matched_lock(mutex_);
-    cv_.wait(matched_lock, [&]() { return ((matched_ > 0) || is_stopped()); });
+    cv_.wait(matched_lock, [&]()
+            {
+                // at least one has been discovered
+                return ((matched_ > 0) || is_stopped());
+            });
 
     if (!is_stopped())
     {
-        // Create KeyDataModule object
-        KeyDataModule data(10, 20, 30);
-        
-        // Convert to string
-        std::ostringstream oss;
-        oss << "k1:" << data.k1 << ",k2:" << data.k2 << ",k3:" << data.k3;
-        
-        // Create DDS message
+        /* Initialize your structure here */
         Test sample_;
-        sample_.msg(oss.str());  // Set the serialized string
-        
-        // Send the message
         ret = (RETCODE_OK == writer_->write(&sample_));
-        
-        // Optional: Print what we're sending
-        std::cout << "Sent: " << oss.str() << std::endl;
     }
     return ret;
-}   
+}
 
 bool TestPublisherApp::is_stopped()
 {
