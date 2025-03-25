@@ -1,0 +1,2 @@
+/usr/bin/ar qc libTest_lib.a CMakeFiles/Test_lib.dir/TestTypeObjectSupport.cxx.o CMakeFiles/Test_lib.dir/TestPubSubTypes.cxx.o CMakeFiles/Test_lib.dir/KeyDataModule.cxx.o
+/usr/bin/ranlib libTest_lib.a
