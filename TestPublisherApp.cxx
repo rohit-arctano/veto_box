@@ -29,6 +29,8 @@
 #include <fastdds/dds/log/Log.hpp>
 #include <fastdds/dds/log/StdoutConsumer.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
+
+#include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
@@ -40,7 +42,7 @@ using namespace eprosima::fastdds::dds;
 
 TestPublisherApp::TestPublisherApp(
     const int &domain_id)
-    : factory_(nullptr), participant_(nullptr), publisher_(nullptr), topic_(nullptr), writer_(nullptr), type_(new TestPubSubType()), matched_(0), samples_sent_(0), stop_(false)
+    : factory_(nullptr), participant_(nullptr), publisher_(nullptr), topic_(nullptr), writer_(nullptr), type_(new TestPubSubType()), matched_(0), samples_sent_(0), stop_(false), listener_(this)
 {
     std::string local_ip = "192.168.1.100";
     std::cout << "[CONFIG] Using Ethernet IP: " << local_ip << std::endl;
@@ -50,99 +52,97 @@ TestPublisherApp::TestPublisherApp(
     pqos.name("Test_pub_participant");
     std::cout << "[CONFIG] Participant name set to: " << pqos.name() << std::endl;
 
-    pqos.name("Test_pub_participant");
-    factory_ = DomainParticipantFactory::get_shared_instance();
-    participant_ = factory_->create_participant(domain_id, pqos, nullptr, StatusMask::none());
-    if (participant_ == nullptr)
-    {
-        throw std::runtime_error("Test Participant initialization failed");
-    }
-    std::cout << "Participant created successfully!" << std::endl;
+    // 1. Configure unicast locator
+    
+    eprosima::fastdds::rtps::Locator_t unicast_locator;
+    eprosima::fastdds::rtps::IPLocator::setIPv4(unicast_locator, local_ip);
+    unicast_locator.port = 7400;
 
-    // Configure UDP transport
+    // 2. Configure builtin locators
+    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(unicast_locator);
+    pqos.wire_protocol().builtin.initialPeersList.push_back(unicast_locator);
+
     std::cout << "[TRANSPORT] Creating UDPv4 transport descriptor..." << std::endl;
     auto udp_transport = std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+    // udp_transport->sendBufferSize = 4096;
+    // udp_transport->receiveBufferSize = 4096;
+    // udp_transport->maxMessageSize = 2048;
+    // udp_transport->non_blocking_send = true;
 
-    // Set buffer sizes
-    udp_transport->sendBufferSize = 9216;
-    udp_transport->receiveBufferSize = 9216;
-    udp_transport->non_blocking_send = true;
-    std::cout << "[TRANSPORT] Buffer sizes configured:\n"
-              << "  - Send: " << udp_transport->sendBufferSize << " bytes\n"
-              << "  - Recv: " << udp_transport->receiveBufferSize << " bytes\n"
-              << "  - MaxMsg: " << udp_transport->maxMessageSize << " bytes" << std::endl;
+    // eprosima::fastdds::rtps::ThreadSettings thread_settings;
 
-    std::cout << "[TRANSPORT] Non-blocking sends: "
-              << (udp_transport->non_blocking_send ? "ENABLED" : "DISABLED") << std::endl;
+    // // Configure reception threads
+    // thread_settings.scheduling_policy = -1;                         // System default
+    // thread_settings.priority = std::numeric_limits<int32_t>::min(); // System default
+    // thread_settings.affinity = 0;                                   // No affinity
+    // thread_settings.stack_size = -1;                                // System default
 
-    udp_transport->interface_allowlist.push_back(local_ip);
-    std::cout << "[TRANSPORT] Interface allowlist: " << local_ip << std::endl;
+    // // Apply to transport
+    // udp_transport->default_reception_threads(thread_settings);
 
+    // // For port-specific configuration (if needed)
+    // eprosima::fastdds::rtps::ThreadSettings port_thread_settings;
+    // port_thread_settings.scheduling_policy = -1;
+    // port_thread_settings.priority = std::numeric_limits<int32_t>::min();
+    // port_thread_settings.affinity = 0;
+    // port_thread_settings.stack_size = -1;
+
+    // udp_transport->set_thread_config_for_port(12345, port_thread_settings);
+    // Link the Transport Layer to the Participant.
     pqos.transport().user_transports.push_back(udp_transport);
+
+    // Avoid using the builtin transports
     pqos.transport().use_builtin_transports = false;
-    std::cout << "[TRANSPORT] Custom transport configured, builtin transports disabled" << std::endl;
-
-    // Configure discovery
-    std::cout << "[DISCOVERY] Configuring metatraffic locators..." << std::endl;
-    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.clear();
-    eprosima::fastdds::rtps::Locator_t meta_locator;
-    meta_locator.kind = LOCATOR_KIND_UDPv4;
-    eprosima::fastdds::rtps::IPLocator::setIPv4(meta_locator, local_ip);
-    meta_locator.port = 7400;
-    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(meta_locator);
-    pqos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
-
-    std::cout << "[DISCOVERY] Unicast locator configured:\n"
-              << "  - IP: " << local_ip << "\n"
-              << "  - Port: " << meta_locator.port << "\n"
-              << "  - Multicast: DISABLED" << std::endl;
-
-    // Create participant
-    std::cout << "[FACTORY] Getting DomainParticipantFactory instance..." << std::endl;
-
-    std::cout << "[SUCCESS] Participant created successfully!\n"
-              << "  - GUID: " << participant_->guid() << "\n"
-              << "  - Domain: 0" << std::endl;
-              pqos.transport().user_transports.push_back(udp_transport);
-
-    type_.register_type(participant_);
-
-    // Create the publisher
-    PublisherQos pub_qos = PUBLISHER_QOS_DEFAULT;
-    participant_->get_default_publisher_qos(pub_qos);
-    publisher_ = participant_->create_publisher(pub_qos, nullptr, StatusMask::none());
-    if (publisher_ == nullptr)
+    try
     {
-        throw std::runtime_error("Test Publisher initialization failed");
+        factory_ = DomainParticipantFactory::get_shared_instance();
+
+        // Important: Use the same factory method consistently
+        participant_ = factory_->create_participant(domain_id, pqos);
+
+        if (participant_ == nullptr)
+        {
+            throw std::runtime_error("Participant creation returned null");
+        }
+
+        // 5. Register type
+        if (!type_.register_type(participant_))
+        {
+            throw std::runtime_error("Type registration failed");
+        }
+
+        std::cout << "Participant created successfully!" << std::endl;
+
+        // 6. Create publisher
+        publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT);
+        if (!publisher_)
+        {
+            throw std::runtime_error("Publisher creation failed");
+        }
+
+        // 7. Create topic
+        TopicQos topic_qos = TOPIC_QOS_DEFAULT;
+        topic_ = participant_->create_topic("TestTopic",
+                                            type_.get_type_name(),
+                                            topic_qos);
+        if (!topic_)
+        {
+            throw std::runtime_error("Topic creation failed");
+        }
+
+        // 8. Create writer
+        DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
+        writer_ = publisher_->create_datawriter(topic_, writer_qos, this);
+        if (!writer_)
+        {
+            throw std::runtime_error("DataWriter creation failed");
+        }
     }
-
-    // Create the topic
-    TopicQos topic_qos = TOPIC_QOS_DEFAULT;
-    participant_->get_default_topic_qos(topic_qos);
-    topic_ = participant_->create_topic("TestTopic", type_.get_type_name(), topic_qos);
-    if (topic_ == nullptr)
+    catch (const std::exception &e)
     {
-        throw std::runtime_error("Test Topic initialization failed");
-    }
-
-    // Create the data writer
-    DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
-    publisher_->get_default_datawriter_qos(writer_qos);
-    writer_qos.reliability().kind = ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS;
-    writer_qos.durability().kind = DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS;
-    writer_qos.history().kind = HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
-    writer_ = publisher_->create_datawriter(topic_, writer_qos, this, StatusMask::all());
-    if (writer_ == nullptr)
-    {
-        throw std::runtime_error("Test DataWriter initialization failed");
-    }
-
-    // Additional debug output for transport verification
-    EPROSIMA_LOG_INFO(RTPS_PARTICIPANT, "Participant created with custom transport");
-    for (const auto &transport : pqos.transport().user_transports)
-    {
-        EPROSIMA_LOG_INFO(RTPS_PARTICIPANT,
-                          "Transport type: " << transport->get_type_name());
+        std::cerr << "ERROR: " << e.what() << std::endl;
+        // Add cleanup code here
+        throw;
     }
 }
 

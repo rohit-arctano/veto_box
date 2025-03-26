@@ -435,6 +435,15 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: \
  /usr/local/include/fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp \
  /usr/local/include/fastdds/dds/builtin/topic/SubscriptionBuiltinTopicData.hpp \
  /usr/local/include/fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp \
+ /usr/local/include/fastdds/dds/subscriber/DataReader.hpp \
+ /usr/local/include/fastdds/dds/core/LoanableSequence.hpp \
+ /usr/local/include/fastdds/dds/core/status/SampleRejectedStatus.hpp \
+ /usr/local/include/fastdds/dds/core/status/SubscriptionMatchedStatus.hpp \
+ /usr/local/include/fastdds/dds/subscriber/ReadCondition.hpp \
+ /usr/local/include/fastdds/dds/subscriber/InstanceState.hpp \
+ /usr/local/include/fastdds/dds/subscriber/SampleState.hpp \
+ /usr/local/include/fastdds/dds/subscriber/ViewState.hpp \
+ /usr/local/include/fastdds/dds/subscriber/SampleInfo.hpp \
  /usr/local/include/fastdds/dds/publisher/Publisher.hpp \
  /usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp \
  /usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp \

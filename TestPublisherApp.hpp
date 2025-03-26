@@ -46,6 +46,7 @@ public:
             eprosima::fastdds::dds::DataWriter* writer,
             const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
 
+  
     //! Run publisher
     void run() override;
 
@@ -73,6 +74,8 @@ private:
     const uint32_t period_ms_ = 3000; // in ms
     uint16_t samples_sent_;
     std::atomic<bool> stop_;
+    eprosima::fastdds::dds::DataWriterListener* listener_;
+
 };
 
 #endif // FAST_DDS_GENERATED__TESTPUBLISHERAPP_HPP
