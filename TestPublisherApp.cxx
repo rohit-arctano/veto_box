@@ -33,6 +33,7 @@
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
 #include <fastdds/rtps/common/Locator.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
 #include "TestPubSubTypes.hpp"
 
 using namespace eprosima::fastdds::dds;
@@ -41,104 +42,107 @@ TestPublisherApp::TestPublisherApp(
     const int &domain_id)
     : factory_(nullptr), participant_(nullptr), publisher_(nullptr), topic_(nullptr), writer_(nullptr), type_(new TestPubSubType()), matched_(0), samples_sent_(0), stop_(false)
 {
-
-    // Get local IP address (replace with your actual IP)
-    std::string local_ip = "192.168.1.101"; // Or use a method to get local IP
-    std::cout << "Using Ethernet IP: " << local_ip << std::endl;
+    std::string local_ip = "192.168.1.100";
+    std::cout << "[CONFIG] Using Ethernet IP: " << local_ip << std::endl;
 
     // Create participant with specific QoS
-    DomainParticipantQos pqos = PARTICIPANT_QOS_DEFAULT;
+    DomainParticipantQos pqos;
     pqos.name("Test_pub_participant");
+    std::cout << "[CONFIG] Participant name set to: " << pqos.name() << std::endl;
 
-    // Configure discovery to use specific IP
+    pqos.name("Test_pub_participant");
+    factory_ = DomainParticipantFactory::get_shared_instance();
+    participant_ = factory_->create_participant(domain_id, pqos, nullptr, StatusMask::none());
+    if (participant_ == nullptr)
+    {
+        throw std::runtime_error("Test Participant initialization failed");
+    }
+    std::cout << "Participant created successfully!" << std::endl;
+
+    // Configure UDP transport
+    std::cout << "[TRANSPORT] Creating UDPv4 transport descriptor..." << std::endl;
+    auto udp_transport = std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+
+    // Set buffer sizes
+    udp_transport->sendBufferSize = 9216;
+    udp_transport->receiveBufferSize = 9216;
+    udp_transport->non_blocking_send = true;
+    std::cout << "[TRANSPORT] Buffer sizes configured:\n"
+              << "  - Send: " << udp_transport->sendBufferSize << " bytes\n"
+              << "  - Recv: " << udp_transport->receiveBufferSize << " bytes\n"
+              << "  - MaxMsg: " << udp_transport->maxMessageSize << " bytes" << std::endl;
+
+    std::cout << "[TRANSPORT] Non-blocking sends: "
+              << (udp_transport->non_blocking_send ? "ENABLED" : "DISABLED") << std::endl;
+
+    udp_transport->interface_allowlist.push_back(local_ip);
+    std::cout << "[TRANSPORT] Interface allowlist: " << local_ip << std::endl;
+
+    pqos.transport().user_transports.push_back(udp_transport);
+    pqos.transport().use_builtin_transports = false;
+    std::cout << "[TRANSPORT] Custom transport configured, builtin transports disabled" << std::endl;
+
+    // Configure discovery
+    std::cout << "[DISCOVERY] Configuring metatraffic locators..." << std::endl;
     pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.clear();
     eprosima::fastdds::rtps::Locator_t meta_locator;
     meta_locator.kind = LOCATOR_KIND_UDPv4;
-    meta_locator.port = 7400; // Default discovery port
-    eprosima::fastdds::rtps::IPLocator::setPortRTPS(meta_locator,5001);
+    eprosima::fastdds::rtps::IPLocator::setIPv4(meta_locator, local_ip);
+    meta_locator.port = 7400;
     pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(meta_locator);
-
-    // Disable multicast for discovery
     pqos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
 
-    factory_ = DomainParticipantFactory::get_shared_instance();
-    participant_ = factory_->create_participant(domain_id, pqos);
+    std::cout << "[DISCOVERY] Unicast locator configured:\n"
+              << "  - IP: " << local_ip << "\n"
+              << "  - Port: " << meta_locator.port << "\n"
+              << "  - Multicast: DISABLED" << std::endl;
 
-    if (!participant_)
-    {
-        std::cerr << "ERROR: Failed to create participant!" << std::endl;
-        return;
-    }
+    // Create participant
+    std::cout << "[FACTORY] Getting DomainParticipantFactory instance..." << std::endl;
 
-    std::cout << "Participant GUID: "   
-              << participant_->guid() << std::endl;
+    std::cout << "[SUCCESS] Participant created successfully!\n"
+              << "  - GUID: " << participant_->guid() << "\n"
+              << "  - Domain: 0" << std::endl;
+              pqos.transport().user_transports.push_back(udp_transport);
 
-    // ✅ Print Domain ID
-    std::cout << "Domain ID: "
-              << participant_->get_domain_id() << std::endl;
-
-    // ✅ Print IP Addresses (Locators)
- 
-    // Register type
-    std::cout << "Registering type..." << std::endl;
     type_.register_type(participant_);
 
-    // Create publisher
-    publisher_ = participant_->create_publisher(PUBLISHER_QOS_DEFAULT);
-
-    if (!publisher_)
+    // Create the publisher
+    PublisherQos pub_qos = PUBLISHER_QOS_DEFAULT;
+    participant_->get_default_publisher_qos(pub_qos);
+    publisher_ = participant_->create_publisher(pub_qos, nullptr, StatusMask::none());
+    if (publisher_ == nullptr)
     {
-        std::cerr << "ERROR: Failed to create publisher!" << std::endl;
-        return;
+        throw std::runtime_error("Test Publisher initialization failed");
     }
-    // Create topic
+
+    // Create the topic
     TopicQos topic_qos = TOPIC_QOS_DEFAULT;
+    participant_->get_default_topic_qos(topic_qos);
     topic_ = participant_->create_topic("TestTopic", type_.get_type_name(), topic_qos);
-
-    if (!topic_)
+    if (topic_ == nullptr)
     {
-        std::cerr << "ERROR: Failed to create topic!" << std::endl;
-        return;
+        throw std::runtime_error("Test Topic initialization failed");
     }
-    // Configure DataWriter QoS for visible traffic
+
+    // Create the data writer
     DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
-
-    std::cout << "Creating data writer..." << std::endl;
-    // Reliability settings
-    writer_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-    writer_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
-    writer_qos.history().kind = KEEP_ALL_HISTORY_QOS;
-
-    // Configure unicast locators using IPLocator
-    writer_qos.endpoint().unicast_locator_list.clear();
-    eprosima::fastdds::rtps::Locator_t uni_loc;
-    uni_loc.kind = LOCATOR_KIND_UDPv4;
-    uni_loc.port = 7400; // Choose a specific port
-
-    // Set IP using IPLocator methods
-    if (!eprosima::fastdds::rtps::IPLocator::setIPv4(uni_loc, local_ip))
-    {
-        throw std::runtime_error("Failed to set IPv4 address");
-    }
-    writer_qos.endpoint().unicast_locator_list.push_back(uni_loc);
-
-    // Clear multicast locators
-    writer_qos.endpoint().multicast_locator_list.clear();
-
-    // Force synchronous publishing
-    writer_qos.publish_mode().kind = SYNCHRONOUS_PUBLISH_MODE;
-
-    // Disable data sharing (which might use shared memory)
-    writer_qos.data_sharing().off();
-
-    // Create writer
+    publisher_->get_default_datawriter_qos(writer_qos);
+    writer_qos.reliability().kind = ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS;
+    writer_qos.durability().kind = DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS;
+    writer_qos.history().kind = HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
     writer_ = publisher_->create_datawriter(topic_, writer_qos, this, StatusMask::all());
-
-    // Print configured locators for debugging
-    EPROSIMA_LOG_INFO(PUBLISHER, "Configured locators:");
-    for (const auto &loc : writer_qos.endpoint().unicast_locator_list)
+    if (writer_ == nullptr)
     {
-        EPROSIMA_LOG_INFO(PUBLISHER, "  " << eprosima::fastdds::rtps::IPLocator::to_string(loc));
+        throw std::runtime_error("Test DataWriter initialization failed");
+    }
+
+    // Additional debug output for transport verification
+    EPROSIMA_LOG_INFO(RTPS_PARTICIPANT, "Participant created with custom transport");
+    for (const auto &transport : pqos.transport().user_transports)
+    {
+        EPROSIMA_LOG_INFO(RTPS_PARTICIPANT,
+                          "Transport type: " << transport->get_type_name());
     }
 }
 

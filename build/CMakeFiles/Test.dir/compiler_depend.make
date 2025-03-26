@@ -931,11 +931,16 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: /home/rohit/Documents/arctano/eprosi
   /usr/local/include/fastdds/rtps/flowcontrol/FlowControllerSchedulerPolicy.hpp \
   /usr/local/include/fastdds/rtps/history/IPayloadPool.hpp \
   /usr/local/include/fastdds/rtps/transport/NetworkBuffer.hpp \
+  /usr/local/include/fastdds/rtps/transport/PortBasedTransportDescriptor.hpp \
   /usr/local/include/fastdds/rtps/transport/SenderResource.hpp \
+  /usr/local/include/fastdds/rtps/transport/SocketTransportDescriptor.hpp \
   /usr/local/include/fastdds/rtps/transport/TransportDescriptorInterface.hpp \
   /usr/local/include/fastdds/rtps/transport/TransportInterface.hpp \
   /usr/local/include/fastdds/rtps/transport/TransportReceiverInterface.hpp \
+  /usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp \
+  /usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp \
   /usr/local/include/fastdds/rtps/transport/network/AllowedNetworkInterface.hpp \
+  /usr/local/include/fastdds/rtps/transport/network/BlockedNetworkInterface.hpp \
   /usr/local/include/fastdds/rtps/transport/network/NetmaskFilterKind.hpp \
   /usr/local/include/fastdds/rtps/transport/network/NetworkInterface.hpp \
   /usr/local/include/fastdds/rtps/transport/network/NetworkInterfaceWithFilter.hpp \
@@ -945,6 +950,12 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: /home/rohit/Documents/arctano/eprosi
   /usr/local/include/fastdds/utils/fixed_size_bitmap.hpp \
   /usr/local/include/fastdds/utils/md5.hpp
 
+
+/usr/local/include/fastdds/rtps/transport/network/BlockedNetworkInterface.hpp:
+
+/usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp:
+
+/usr/local/include/fastdds/rtps/transport/SocketTransportDescriptor.hpp:
 
 /usr/local/include/fastdds/dds/publisher/Publisher.hpp:
 
@@ -1137,6 +1148,8 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: /home/rohit/Documents/arctano/eprosi
 /usr/local/include/fastdds/dds/core/Entity.hpp:
 
 /usr/local/include/fastdds/dds/common/InstanceHandle.hpp:
+
+/usr/local/include/fastdds/rtps/transport/PortBasedTransportDescriptor.hpp:
 
 /usr/local/include/fastdds/dds/builtin/topic/TopicBuiltinTopicData.hpp:
 
@@ -1343,6 +1356,8 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: /home/rohit/Documents/arctano/eprosi
 /usr/include/c++/13/bits/regex_scanner.h:
 
 /usr/include/c++/13/cstdlib:
+
+/usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp:
 
 /usr/include/c++/13/bits/sstream.tcc:
 

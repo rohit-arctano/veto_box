@@ -933,11 +933,16 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o
  /usr/local/include/fastdds/rtps/flowcontrol/FlowControllerSchedulerPolicy.hpp
  /usr/local/include/fastdds/rtps/history/IPayloadPool.hpp
  /usr/local/include/fastdds/rtps/transport/NetworkBuffer.hpp
+ /usr/local/include/fastdds/rtps/transport/PortBasedTransportDescriptor.hpp
  /usr/local/include/fastdds/rtps/transport/SenderResource.hpp
+ /usr/local/include/fastdds/rtps/transport/SocketTransportDescriptor.hpp
  /usr/local/include/fastdds/rtps/transport/TransportDescriptorInterface.hpp
  /usr/local/include/fastdds/rtps/transport/TransportInterface.hpp
  /usr/local/include/fastdds/rtps/transport/TransportReceiverInterface.hpp
+ /usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp
+ /usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp
  /usr/local/include/fastdds/rtps/transport/network/AllowedNetworkInterface.hpp
+ /usr/local/include/fastdds/rtps/transport/network/BlockedNetworkInterface.hpp
  /usr/local/include/fastdds/rtps/transport/network/NetmaskFilterKind.hpp
  /usr/local/include/fastdds/rtps/transport/network/NetworkInterface.hpp
  /usr/local/include/fastdds/rtps/transport/network/NetworkInterfaceWithFilter.hpp

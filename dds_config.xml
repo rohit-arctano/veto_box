@@ -1,0 +1,32 @@
+<!-- dds_config.xml -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<dds xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+    <profiles>
+        <participant profile_name="udp_participant">
+            <rtps>
+                <userTransports>
+                    <transport_id>udp_transport</transport_id>
+                </userTransports>
+                <useBuiltinTransports>false</useBuiltinTransports>
+                <builtin>
+                    <metatrafficUnicastLocatorList>
+                        <locator>
+                            <udpv4>
+                                <address>192.168.1.100</address> <!-- Sender IP -->
+                                <port>7400</port>
+                            </udpv4>
+                        </locator>
+                    </metatrafficUnicastLocatorList>
+                </builtin>
+                <defaultUnicastLocatorList>
+                    <locator>
+                        <udpv4>
+                            <address>239.255.0.1</address> <!-- Multicast group -->
+                            <port>7400</port>
+                        </udpv4>
+                    </locator>
+                </defaultUnicastLocatorList>
+            </rtps>
+        </participant>
+    </profiles>
+</dds>

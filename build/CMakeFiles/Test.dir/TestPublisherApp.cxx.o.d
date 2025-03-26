@@ -436,5 +436,10 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: \
  /usr/local/include/fastdds/dds/builtin/topic/SubscriptionBuiltinTopicData.hpp \
  /usr/local/include/fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp \
  /usr/local/include/fastdds/dds/publisher/Publisher.hpp \
+ /usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp \
+ /usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp \
+ /usr/local/include/fastdds/rtps/transport/SocketTransportDescriptor.hpp \
+ /usr/local/include/fastdds/rtps/transport/network/BlockedNetworkInterface.hpp \
+ /usr/local/include/fastdds/rtps/transport/PortBasedTransportDescriptor.hpp \
  /home/rohit/Documents/arctano/eprosium/veto_box/TestPubSubTypes.hpp \
  /home/rohit/Documents/arctano/eprosium/veto_box/Test.hpp
