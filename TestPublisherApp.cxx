@@ -42,68 +42,38 @@ TestPublisherApp::TestPublisherApp(
     const int &domain_id)
     : factory_(nullptr), participant_(nullptr), publisher_(nullptr), topic_(nullptr), writer_(nullptr), type_(new TestPubSubType()), matched_(0), samples_sent_(0), stop_(false)
 {
-    std::string local_ip = "192.168.1.100";
-    std::cout << "[CONFIG] Using Ethernet IP: " << local_ip << std::endl;
 
-    // Create participant with specific QoS
-    DomainParticipantQos pqos;
-    pqos.name("Test_pub_participant");
-    std::cout << "[CONFIG] Participant name set to: " << pqos.name() << std::endl;
-
-    pqos.name("Test_pub_participant");
+  
+    DomainParticipantQos participant_qos;
+    participant_qos.name("TestParticipant");
+    
+    // Enable server discovery protocol
+    participant_qos.wire_protocol().builtin.discovery_config.discoveryProtocol = 
+        eprosima::fastdds::rtps::DiscoveryProtocol::SERVER;
+    
+    // Define locator
+    eprosima::fastdds::rtps::Locator_t locator;
+    eprosima::fastdds::rtps::IPLocator::setIPv4(locator, "192.168.10.50");
+    locator.port = 56542;
+    
+    // Set for both listening address and initial peer
+    participant_qos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(locator);
+    participant_qos.wire_protocol().builtin.initialPeersList.push_back(locator);
+    
+    // Optional: clear multicast
+    participant_qos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
+    
+    // Create participant
     factory_ = DomainParticipantFactory::get_shared_instance();
-    participant_ = factory_->create_participant(domain_id, pqos, nullptr, StatusMask::none());
+
+ 
+     participant_ = factory_->create_participant(0, participant_qos);
+    
     if (participant_ == nullptr)
     {
-        throw std::runtime_error("Test Participant initialization failed");
+        throw std::runtime_error("Participant initialization failed");
     }
-    std::cout << "Participant created successfully!" << std::endl;
-
-    // Configure UDP transport
-    std::cout << "[TRANSPORT] Creating UDPv4 transport descriptor..." << std::endl;
-    auto udp_transport = std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
-
-    // Set buffer sizes
-    udp_transport->sendBufferSize = 9216;
-    udp_transport->receiveBufferSize = 9216;
-    udp_transport->non_blocking_send = true;
-    std::cout << "[TRANSPORT] Buffer sizes configured:\n"
-              << "  - Send: " << udp_transport->sendBufferSize << " bytes\n"
-              << "  - Recv: " << udp_transport->receiveBufferSize << " bytes\n"
-              << "  - MaxMsg: " << udp_transport->maxMessageSize << " bytes" << std::endl;
-
-    std::cout << "[TRANSPORT] Non-blocking sends: "
-              << (udp_transport->non_blocking_send ? "ENABLED" : "DISABLED") << std::endl;
-
-    udp_transport->interface_allowlist.push_back(local_ip);
-    std::cout << "[TRANSPORT] Interface allowlist: " << local_ip << std::endl;
-
-    pqos.transport().user_transports.push_back(udp_transport);
-    pqos.transport().use_builtin_transports = false;
-    std::cout << "[TRANSPORT] Custom transport configured, builtin transports disabled" << std::endl;
-
-    // Configure discovery
-    std::cout << "[DISCOVERY] Configuring metatraffic locators..." << std::endl;
-    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.clear();
-    eprosima::fastdds::rtps::Locator_t meta_locator;
-    meta_locator.kind = LOCATOR_KIND_UDPv4;
-    eprosima::fastdds::rtps::IPLocator::setIPv4(meta_locator, local_ip);
-    meta_locator.port = 7400;
-    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(meta_locator);
-    pqos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
-
-    std::cout << "[DISCOVERY] Unicast locator configured:\n"
-              << "  - IP: " << local_ip << "\n"
-              << "  - Port: " << meta_locator.port << "\n"
-              << "  - Multicast: DISABLED" << std::endl;
-
-    // Create participant
-    std::cout << "[FACTORY] Getting DomainParticipantFactory instance..." << std::endl;
-
-    std::cout << "[SUCCESS] Participant created successfully!\n"
-              << "  - GUID: " << participant_->guid() << "\n"
-              << "  - Domain: 0" << std::endl;
-              pqos.transport().user_transports.push_back(udp_transport);
+    std::cout << "[DEBUG] Participant created successfully!" << std::endl;
 
     type_.register_type(participant_);
 
@@ -118,6 +88,7 @@ TestPublisherApp::TestPublisherApp(
 
     // Create the topic
     TopicQos topic_qos = TOPIC_QOS_DEFAULT;
+
     participant_->get_default_topic_qos(topic_qos);
     topic_ = participant_->create_topic("TestTopic", type_.get_type_name(), topic_qos);
     if (topic_ == nullptr)
@@ -127,6 +98,7 @@ TestPublisherApp::TestPublisherApp(
 
     // Create the data writer
     DataWriterQos writer_qos = DATAWRITER_QOS_DEFAULT;
+
     publisher_->get_default_datawriter_qos(writer_qos);
     writer_qos.reliability().kind = ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS;
     writer_qos.durability().kind = DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS;
@@ -139,7 +111,7 @@ TestPublisherApp::TestPublisherApp(
 
     // Additional debug output for transport verification
     EPROSIMA_LOG_INFO(RTPS_PARTICIPANT, "Participant created with custom transport");
-    for (const auto &transport : pqos.transport().user_transports)
+    for (const auto &transport : participant_qos.transport().user_transports)
     {
         EPROSIMA_LOG_INFO(RTPS_PARTICIPANT,
                           "Transport type: " << transport->get_type_name());

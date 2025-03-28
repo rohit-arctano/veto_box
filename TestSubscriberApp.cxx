@@ -35,29 +35,32 @@
 
 using namespace eprosima::fastdds::dds;
 
+
 TestSubscriberApp::TestSubscriberApp(
-        const int& domain_id)
-    : factory_(nullptr)
-    , participant_(nullptr)
-    , subscriber_(nullptr)
-    , topic_(nullptr)
-    , reader_(nullptr)
-    , type_(new TestPubSubType())
-    , samples_received_(0)
-    , stop_(false)
+    const int &domain_id)
+    : factory_(nullptr), participant_(nullptr), subscriber_(nullptr), topic_(nullptr), reader_(nullptr), type_(new TestPubSubType()), samples_received_(0), stop_(false)
 {
+    std::cout << "Debug: Initializing TestSubscriberApp." << std::endl;
+
     // Create the participant
     DomainParticipantQos pqos = PARTICIPANT_QOS_DEFAULT;
     pqos.name("Test_sub_participant");
+    eprosima::fastdds::rtps::Locator_t publisher_locator;
+    eprosima::fastdds::rtps::IPLocator::setIPv4(publisher_locator, "192.168.10.57"); // Publisher's IP
+    publisher_locator.port = 56542;
+    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(publisher_locator);
+
     factory_ = DomainParticipantFactory::get_shared_instance();
     participant_ = factory_->create_participant(domain_id, pqos, nullptr, StatusMask::none());
     if (participant_ == nullptr)
     {
         throw std::runtime_error("Test Participant initialization failed");
     }
+    std::cout << "Debug: Participant created successfully." << std::endl;
 
     // Register the type
     type_.register_type(participant_);
+    std::cout << "Debug: Registering type with participant." << std::endl;
 
     // Create the subscriber
     SubscriberQos sub_qos = SUBSCRIBER_QOS_DEFAULT;
@@ -67,6 +70,7 @@ TestSubscriberApp::TestSubscriberApp(
     {
         throw std::runtime_error("Test Subscriber initialization failed");
     }
+    std::cout << "Debug: Subscriber created successfully." << std::endl;
 
     // Create the topic
     TopicQos topic_qos = TOPIC_QOS_DEFAULT;
@@ -76,6 +80,7 @@ TestSubscriberApp::TestSubscriberApp(
     {
         throw std::runtime_error("Test Topic initialization failed");
     }
+    std::cout << "Debug: Topic created successfully." << std::endl;
 
     // Create the reader
     DataReaderQos reader_qos = DATAREADER_QOS_DEFAULT;
@@ -88,6 +93,9 @@ TestSubscriberApp::TestSubscriberApp(
     {
         throw std::runtime_error("Test DataReader initialization failed");
     }
+    std::cout << "Debug: DataReader created successfully." << std::endl;
+
+    std::cout << "Debug: TestSubscriberApp initialization complete." << std::endl;
 }
 
 TestSubscriberApp::~TestSubscriberApp()
@@ -103,8 +111,8 @@ TestSubscriberApp::~TestSubscriberApp()
 }
 
 void TestSubscriberApp::on_subscription_matched(
-        DataReader* /*reader*/,
-        const SubscriptionMatchedStatus& info)
+    DataReader * /*reader*/,
+    const SubscriptionMatchedStatus &info)
 {
     if (info.current_count_change == 1)
     {
@@ -121,46 +129,46 @@ void TestSubscriberApp::on_subscription_matched(
     }
 }
 
-  // In subscriber, you could also display the message content:
-  void TestSubscriberApp::on_data_available(DataReader* reader)
-  {
-      Test sample_;
-      SampleInfo info;
-      while ((!is_stopped()) && (RETCODE_OK == reader->take_next_sample(&sample_, &info)))  
-      {
-          if ((info.instance_state == ALIVE_INSTANCE_STATE) && info.valid_data)
-          {
-              std::cout << "Received raw message: " << sample_.msg() << std::endl;
-              
-              // Parse the string back into KeyDataModule (optional)
-              try {
-                  std::string msg = sample_.msg();
-                  size_t k1_pos = msg.find("k1:");
-                  size_t k2_pos = msg.find("k2:");
-                  size_t k3_pos = msg.find("k3:");
-                  
-                  int k1 = std::stoi(msg.substr(k1_pos+3, msg.find(',', k1_pos)-(k1_pos+3)));
-                  int k2 = std::stoi(msg.substr(k2_pos+3, msg.find(',', k2_pos)-(k2_pos+3)));
-                  int k3 = std::stoi(msg.substr(k3_pos+3));
-                  
-                  std::cout << "Parsed values - k1: " << k1 
-                            << ", k2: " << k2 
-                            << ", k3: " << k3 << std::endl;
-              }
-              catch (...) {
-                  std::cerr << "Error parsing message" << std::endl;
-              }
-          }
-      }
-  }
+// In subscriber, you could also display the message content:
+void TestSubscriberApp::on_data_available(DataReader *reader)
+{
+    Test sample_;
+    SampleInfo info;
+    while ((!is_stopped()) && (RETCODE_OK == reader->take_next_sample(&sample_, &info)))
+    {
+        if ((info.instance_state == ALIVE_INSTANCE_STATE) && info.valid_data)
+        {
+            std::cout << "Received raw message: " << sample_.msg() << std::endl;
+
+            // Parse the string back into KeyDataModule (optional)
+            try
+            {
+                std::string msg = sample_.msg();
+                size_t k1_pos = msg.find("k1:");
+                size_t k2_pos = msg.find("k2:");
+                size_t k3_pos = msg.find("k3:");
+
+                int k1 = std::stoi(msg.substr(k1_pos + 3, msg.find(',', k1_pos) - (k1_pos + 3)));
+                int k2 = std::stoi(msg.substr(k2_pos + 3, msg.find(',', k2_pos) - (k2_pos + 3)));
+                int k3 = std::stoi(msg.substr(k3_pos + 3));
+
+                std::cout << "Parsed values - k1: " << k1
+                          << ", k2: " << k2
+                          << ", k3: " << k3 << std::endl;
+            }
+            catch (...)
+            {
+                std::cerr << "Error parsing message" << std::endl;
+            }
+        }
+    }
+}
 
 void TestSubscriberApp::run()
 {
     std::unique_lock<std::mutex> lck(terminate_cv_mtx_);
     terminate_cv_.wait(lck, [this]
-            {
-                return is_stopped();
-            });
+                       { return is_stopped(); });
 }
 
 bool TestSubscriberApp::is_stopped()
