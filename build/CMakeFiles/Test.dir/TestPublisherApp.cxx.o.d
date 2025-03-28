@@ -428,18 +428,11 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: \
  /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
  /usr/include/c++/13/thread /usr/include/c++/13/bits/std_thread.h \
  /usr/include/c++/13/bits/this_thread_sleep.h \
- /usr/local/include/fastdds/dds/log/StdoutConsumer.hpp \
- /usr/local/include/fastdds/dds/log/OStreamConsumer.hpp \
  /usr/local/include/fastdds/dds/publisher/DataWriter.hpp \
  /usr/local/include/fastdds/dds/builtin/topic/PublicationBuiltinTopicData.hpp \
  /usr/local/include/fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp \
  /usr/local/include/fastdds/dds/builtin/topic/SubscriptionBuiltinTopicData.hpp \
  /usr/local/include/fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp \
  /usr/local/include/fastdds/dds/publisher/Publisher.hpp \
- /usr/local/include/fastdds/rtps/transport/UDPv4TransportDescriptor.hpp \
- /usr/local/include/fastdds/rtps/transport/UDPTransportDescriptor.hpp \
- /usr/local/include/fastdds/rtps/transport/SocketTransportDescriptor.hpp \
- /usr/local/include/fastdds/rtps/transport/network/BlockedNetworkInterface.hpp \
- /usr/local/include/fastdds/rtps/transport/PortBasedTransportDescriptor.hpp \
  /home/rohit/Documents/arctano/eprosium/veto_box/TestPubSubTypes.hpp \
  /home/rohit/Documents/arctano/eprosium/veto_box/Test.hpp
