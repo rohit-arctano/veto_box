@@ -204,7 +204,7 @@
  
      // Create and send sample regardless of subscriber presence
      Test sample_;
-     KeyDataModule data(10, 20, 30);
+     KeyDataModule data(10, 50, 30);
      std::ostringstream msg;
      msg << "k1:" << data.k1 << ",k2:" << data.k2 << ",k3:" << data.k3;
      sample_.msg(msg.str());
