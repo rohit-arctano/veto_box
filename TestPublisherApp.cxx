@@ -54,7 +54,7 @@
  
      eprosima::fastdds::rtps::Locator_t remote_server_locator;
      remote_server_locator.kind = LOCATOR_KIND_UDPv4;
-     eprosima::fastdds::rtps::IPLocator::setIPv4(remote_server_locator, "192.168.10.57"); // Subscriber IP
+     eprosima::fastdds::rtps::IPLocator::setIPv4(remote_server_locator, "192.168.10.100"); // Subscriber IP
      remote_server_locator.port = 56543; // Example port
      participant_qos.wire_protocol().builtin.discovery_config.m_DiscoveryServers.push_back(remote_server_locator);
  
@@ -62,7 +62,7 @@
  
      // Define locator
      eprosima::fastdds::rtps::Locator_t locator;
-     eprosima::fastdds::rtps::IPLocator::setIPv4(locator, "192.168.10.100");
+     eprosima::fastdds::rtps::IPLocator::setIPv4(locator, "192.168.10.57");
      locator.port = 56542;
      std::cout << "Locator set to IP: 192.168.10.100, Port: 56542." << std::endl;
  
@@ -190,7 +190,7 @@
  void TestPublisherApp::processKeyData(const KeyDataModule &data)
  {
      // Example processing or sending function
-     std::cout << "Processing KeyDataModule: ";
+    //  std::cout << "Processing KeyDataModule: ";
      data.display();
  }
  
@@ -209,14 +209,14 @@
      msg << "k1:" << data.k1 << ",k2:" << data.k2 << ",k3:" << data.k3;
      sample_.msg(msg.str());
  
-     std::cout << "Publishing sample: " << msg.str() << std::endl;
+    //  std::cout << "Publishing sample: " << msg.str() << std::endl;
  
      ReturnCode_t ret;
      ret = (RETCODE_OK == writer_->write(&sample_));
      if (ret)
      {
          samples_sent_++;
-         std::cout << "Sample sent successfully (Total: " << samples_sent_ << ")" << std::endl;
+        //  std::cout << "Sample sent successfully (Total: " << samples_sent_ << ")" << std::endl;
          return true;
      }
      else

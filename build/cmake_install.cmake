@@ -1,4 +1,4 @@
-# Install script for directory: /home/rohit/Documents/arctano/eprosium/veto_box
+# Install script for directory: /home/vetobox/Documents/veto_box
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/rohit/Documents/arctano/eprosium/veto_box/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/vetobox/Documents/veto_box/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

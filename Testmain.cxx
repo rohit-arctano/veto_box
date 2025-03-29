@@ -76,7 +76,8 @@ int main(
     }
     else
     {
-        try
+        try                 
+        
         {
             app = TestApplication::make_app(domain_id, argv[1]);
         }
