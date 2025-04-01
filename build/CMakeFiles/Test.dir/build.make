@@ -111,10 +111,24 @@ CMakeFiles/Test.dir/TestSubscriberApp.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Test.dir/TestSubscriberApp.cxx.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/vetobox/Documents/veto_box/TestSubscriberApp.cxx -o CMakeFiles/Test.dir/TestSubscriberApp.cxx.s
 
+CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o: CMakeFiles/Test.dir/flags.make
+CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o: /home/vetobox/Documents/veto_box/GpioPinSemaphore.cxx
+CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o: CMakeFiles/Test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o -MF CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o.d -o CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o -c /home/vetobox/Documents/veto_box/GpioPinSemaphore.cxx
+
+CMakeFiles/Test.dir/GpioPinSemaphore.cxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Test.dir/GpioPinSemaphore.cxx.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/vetobox/Documents/veto_box/GpioPinSemaphore.cxx > CMakeFiles/Test.dir/GpioPinSemaphore.cxx.i
+
+CMakeFiles/Test.dir/GpioPinSemaphore.cxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Test.dir/GpioPinSemaphore.cxx.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/vetobox/Documents/veto_box/GpioPinSemaphore.cxx -o CMakeFiles/Test.dir/GpioPinSemaphore.cxx.s
+
 CMakeFiles/Test.dir/TestRunner.cpp.o: CMakeFiles/Test.dir/flags.make
 CMakeFiles/Test.dir/TestRunner.cpp.o: /home/vetobox/Documents/veto_box/TestRunner.cpp
 CMakeFiles/Test.dir/TestRunner.cpp.o: CMakeFiles/Test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Test.dir/TestRunner.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Test.dir/TestRunner.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Test.dir/TestRunner.cpp.o -MF CMakeFiles/Test.dir/TestRunner.cpp.o.d -o CMakeFiles/Test.dir/TestRunner.cpp.o -c /home/vetobox/Documents/veto_box/TestRunner.cpp
 
 CMakeFiles/Test.dir/TestRunner.cpp.i: cmake_force
@@ -128,7 +142,7 @@ CMakeFiles/Test.dir/TestRunner.cpp.s: cmake_force
 CMakeFiles/Test.dir/main.cpp.o: CMakeFiles/Test.dir/flags.make
 CMakeFiles/Test.dir/main.cpp.o: /home/vetobox/Documents/veto_box/main.cpp
 CMakeFiles/Test.dir/main.cpp.o: CMakeFiles/Test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Test.dir/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Test.dir/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Test.dir/main.cpp.o -MF CMakeFiles/Test.dir/main.cpp.o.d -o CMakeFiles/Test.dir/main.cpp.o -c /home/vetobox/Documents/veto_box/main.cpp
 
 CMakeFiles/Test.dir/main.cpp.i: cmake_force
@@ -144,6 +158,7 @@ Test_OBJECTS = \
 "CMakeFiles/Test.dir/TestApplication.cxx.o" \
 "CMakeFiles/Test.dir/TestPublisherApp.cxx.o" \
 "CMakeFiles/Test.dir/TestSubscriberApp.cxx.o" \
+"CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o" \
 "CMakeFiles/Test.dir/TestRunner.cpp.o" \
 "CMakeFiles/Test.dir/main.cpp.o"
 
@@ -153,6 +168,7 @@ Test_EXTERNAL_OBJECTS =
 Test: CMakeFiles/Test.dir/TestApplication.cxx.o
 Test: CMakeFiles/Test.dir/TestPublisherApp.cxx.o
 Test: CMakeFiles/Test.dir/TestSubscriberApp.cxx.o
+Test: CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o
 Test: CMakeFiles/Test.dir/TestRunner.cpp.o
 Test: CMakeFiles/Test.dir/main.cpp.o
 Test: CMakeFiles/Test.dir/build.make
@@ -164,7 +180,7 @@ Test: /usr/lib/aarch64-linux-gnu/libtinyxml2.so.9.0.0
 Test: /usr/lib/aarch64-linux-gnu/libssl.so
 Test: /usr/lib/aarch64-linux-gnu/libcrypto.so
 Test: CMakeFiles/Test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable Test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/vetobox/Documents/veto_box/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable Test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

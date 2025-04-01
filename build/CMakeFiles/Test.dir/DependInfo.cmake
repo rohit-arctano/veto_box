@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/vetobox/Documents/veto_box/GpioPinSemaphore.cxx" "CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o" "gcc" "CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o.d"
   "/home/vetobox/Documents/veto_box/TestApplication.cxx" "CMakeFiles/Test.dir/TestApplication.cxx.o" "gcc" "CMakeFiles/Test.dir/TestApplication.cxx.o.d"
   "/home/vetobox/Documents/veto_box/TestPublisherApp.cxx" "CMakeFiles/Test.dir/TestPublisherApp.cxx.o" "gcc" "CMakeFiles/Test.dir/TestPublisherApp.cxx.o.d"
   "/home/vetobox/Documents/veto_box/TestRunner.cpp" "CMakeFiles/Test.dir/TestRunner.cpp.o" "gcc" "CMakeFiles/Test.dir/TestRunner.cpp.o.d"

@@ -5,12 +5,13 @@
 
 class KeyDataModule {
 public:
-    int k1;
-    int k2;
-    int k3;
+std::string k1;  // k1 as string
+std::string k2;  // k2 as string
+std::string k3;  // k3 as string
+
 
     // Constructor
-    KeyDataModule(int val1, int val2, int val3);
+    KeyDataModule(const std::string& val1, const std::string& val2, const std::string& val3);
 
     // Method to display values
     void display() const;

@@ -20,7 +20,7 @@
  */
 
  #include "TestPublisherApp.hpp"
-
+#include "GpioPinSemaphore.hpp"
  #include <condition_variable>
  #include <csignal>
  #include <stdexcept>
@@ -171,7 +171,8 @@
          if (publish()) // Assuming publish() triggers an event
          {
              // Create an instance of KeyDataModule
-             KeyDataModule obj(10, 20, 30);
+    
+             KeyDataModule obj(lastState1, lastState2, lastState3);
  
              // Display object values
              obj.display();
@@ -181,8 +182,18 @@
          }
  
          // Wait for period or stop event
+         if(interupt){
+            std::lock_guard<std::mutex> lock(mtperiod);
+            peridicTime =0;
+            std::lock_guard<std::mutex> lock(mtIntrp);
+            interupt = false;
+
+         }else {
+            std::lock_guard<std::mutex> lock(mtperiod);
+            peridicTime =1;
+         }
          std::unique_lock<std::mutex> period_lock(mutex_);
-         cv_.wait_for(period_lock, std::chrono::milliseconds(period_ms_), [this]()
+         cv_.wait_for(period_lock, std::chrono::milliseconds(peridicTime), [this]()
                       { return is_stopped(); });
      }
  }
@@ -204,7 +215,7 @@
  
      // Create and send sample regardless of subscriber presence
      Test sample_;
-     KeyDataModule data(10, 50, 30);
+     KeyDataModule data(lastState1, lastState2, lastState3);
      std::ostringstream msg;
      msg << "k1:" << data.k1 << ",k2:" << data.k2 << ",k3:" << data.k3;
      sample_.msg(msg.str());

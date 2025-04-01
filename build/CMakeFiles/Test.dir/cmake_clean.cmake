@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o"
+  "CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o.d"
   "CMakeFiles/Test.dir/TestApplication.cxx.o"
   "CMakeFiles/Test.dir/TestApplication.cxx.o.d"
   "CMakeFiles/Test.dir/TestPublisherApp.cxx.o"

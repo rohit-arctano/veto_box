@@ -377,6 +377,7 @@ CMakeFiles/Test.dir/TestApplication.cxx.o: \
  /usr/local/include/fastdds/dds/core/status/IncompatibleQosStatus.hpp \
  /usr/local/include/fastdds/dds/core/status/DeadlineMissedStatus.hpp \
  /home/vetobox/Documents/veto_box/KeyDataModule.hpp \
+ /home/vetobox/Documents/veto_box/GpioPinSemaphore.hpp \
  /home/vetobox/Documents/veto_box/TestSubscriberApp.hpp \
  /usr/local/include/fastdds/dds/subscriber/DataReaderListener.hpp \
  /usr/local/include/fastdds/dds/core/status/LivelinessChangedStatus.hpp \

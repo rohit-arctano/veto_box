@@ -29,6 +29,8 @@
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 #include "KeyDataModule.hpp"
+#include <chrono>
+#include "GpioPinSemaphore.hpp"
 #include "TestApplication.hpp"
 
 class TestPublisherApp : public TestApplication,
@@ -70,7 +72,7 @@ private:
     std::condition_variable cv_;
     int32_t matched_;
     std::mutex mutex_;
-    const uint32_t period_ms_ = 3000; // in ms
+    const uint32_t period_ms_ = 1000; // in ms
     uint16_t samples_sent_;
     std::atomic<bool> stop_;
 };

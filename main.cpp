@@ -4,25 +4,27 @@
 #include <chrono>
 #include <atomic>
 #include <csignal>
-
+#include "GpioPinSemaphore.hpp"
 #include "TestRunner.hpp"
 
 #define GPIO_INPUT_1 0 // WiringPi 0 = BCM 17
 #define GPIO_INPUT_2 2 // WiringPi 2 = BCM 27
 #define GPIO_INPUT_3 3 // WiringPi 3 = BCM 22
 
+
+
 std::atomic<bool> running(true);
 
 void gpioCallback1() {
-    std::cout << "GPIO 17 (Pin 11) -> LOW (Pressed)" << std::endl;
+    // std::cout << "GPIO 17 (Pin 11) -> LOW (Pressed)" << std::endl;
 }
 
 void gpioCallback2() {
-    std::cout << "GPIO 27 (Pin 13) -> LOW (Pressed)" << std::endl;
+    // std::cout << "GPIO 27 (Pin 13) -> LOW (Pressed)" << std::endl;
 }
 
 void gpioCallback3() {
-    std::cout << "GPIO 22 (Pin 15) -> LOW (Pressed)" << std::endl;
+    // std::cout << "GPIO 22 (Pin 15) -> LOW (Pressed)" << std::endl;
 }
 
 void gpioTask() {
@@ -45,29 +47,54 @@ void gpioTask() {
     }
 }
 
-void pinMonitorTask() {
-    bool lastState1 = HIGH;
-    bool lastState2 = HIGH;
-    bool lastState3 = HIGH;
+#include "GpioPinSemaphore.hpp"
 
+void pinMonitorTask() {
     while (running) {
         int state1 = digitalRead(GPIO_INPUT_1);
         int state2 = digitalRead(GPIO_INPUT_2);
         int state3 = digitalRead(GPIO_INPUT_3);
 
-        if (state1 == HIGH && lastState1 == LOW) {
-            std::cout << "GPIO 17 (Pin 11) -> HIGH (Released)" << std::endl;
-        }
-        if (state2 == HIGH && lastState2 == LOW) {
-            std::cout << "GPIO 27 (Pin 13) -> HIGH (Released)" << std::endl;
-        }
-        if (state3 == HIGH && lastState3 == LOW) {
-            std::cout << "GPIO 22 (Pin 15) -> HIGH (Released)" << std::endl;
+        std::string newState1 = (state1 == HIGH) ? "1" : "0";
+        std::string newState2 = (state2 == HIGH) ? "1" : "0";
+        std::string newState3 = (state3 == HIGH) ? "1" : "0";
+
+        // Lock the mutex for each state before updating the corresponding state
+        {
+            std::lock_guard<std::mutex> lock(mtx1);  // Lock for lastState1
+            if (newState1 != lastState1) {
+                lastState1 = newState1;
+                std::lock_guard<std::mutex> lock(mtIntrp);
+                interupt =true;
+                std::lock_guard<std::mutex> lock(mtperiod);
+                peridicTime =0;
+
+                // Lock for lastState1
+                
+            }
         }
 
-        lastState1 = state1;
-        lastState2 = state2;
-        lastState3 = state3;
+        {
+            std::lock_guard<std::mutex> lock(mtx2);  // Lock for lastState2
+            if (newState2 != lastState2) {
+                lastState2 = newState2;
+                std::lock_guard<std::mutex> lock(mtIntrp);
+                interupt =true;
+                std::lock_guard<std::mutex> lock(mtperiod);
+                peridicTime =0;
+            }
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(mtx3);  // Lock for lastState3
+            if (newState3 != lastState3) {
+                lastState3 = newState3;
+                std::lock_guard<std::mutex> lock(mtIntrp);
+                interupt =true;
+                std::lock_guard<std::mutex> lock(mtperiod);
+                peridicTime =0;
+            }
+        }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }

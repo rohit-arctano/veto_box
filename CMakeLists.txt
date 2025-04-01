@@ -39,7 +39,7 @@ message(STATUS "Configuring Test...")
 add_library(Test_lib TestTypeObjectSupport.cxx TestPubSubTypes.cxx KeyDataModule.cxx)
 target_link_libraries(Test_lib fastcdr fastdds)
 
-add_executable(Test TestApplication.cxx TestPublisherApp.cxx TestSubscriberApp.cxx TestRunner.cpp main.cpp) 
+add_executable(Test TestApplication.cxx TestPublisherApp.cxx TestSubscriberApp.cxx GpioPinSemaphore.cxx TestRunner.cpp main.cpp) 
 target_link_libraries(Test fastcdr fastdds
         Test_lib wiringPi
         )

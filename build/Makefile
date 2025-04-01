@@ -142,6 +142,30 @@ Test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Test.dir/build.make CMakeFiles/Test.dir/build
 .PHONY : Test/fast
 
+GpioPinSemaphore.o: GpioPinSemaphore.cxx.o
+.PHONY : GpioPinSemaphore.o
+
+# target to build an object file
+GpioPinSemaphore.cxx.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Test.dir/build.make CMakeFiles/Test.dir/GpioPinSemaphore.cxx.o
+.PHONY : GpioPinSemaphore.cxx.o
+
+GpioPinSemaphore.i: GpioPinSemaphore.cxx.i
+.PHONY : GpioPinSemaphore.i
+
+# target to preprocess a source file
+GpioPinSemaphore.cxx.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Test.dir/build.make CMakeFiles/Test.dir/GpioPinSemaphore.cxx.i
+.PHONY : GpioPinSemaphore.cxx.i
+
+GpioPinSemaphore.s: GpioPinSemaphore.cxx.s
+.PHONY : GpioPinSemaphore.s
+
+# target to generate assembly for a file
+GpioPinSemaphore.cxx.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Test.dir/build.make CMakeFiles/Test.dir/GpioPinSemaphore.cxx.s
+.PHONY : GpioPinSemaphore.cxx.s
+
 KeyDataModule.o: KeyDataModule.cxx.o
 .PHONY : KeyDataModule.o
 
@@ -344,6 +368,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... Test"
 	@echo "... Test_lib"
+	@echo "... GpioPinSemaphore.o"
+	@echo "... GpioPinSemaphore.i"
+	@echo "... GpioPinSemaphore.s"
 	@echo "... KeyDataModule.o"
 	@echo "... KeyDataModule.i"
 	@echo "... KeyDataModule.s"

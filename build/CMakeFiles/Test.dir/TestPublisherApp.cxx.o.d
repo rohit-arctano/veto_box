@@ -381,6 +381,7 @@ CMakeFiles/Test.dir/TestPublisherApp.cxx.o: \
  /usr/local/include/fastdds/dds/core/status/IncompatibleQosStatus.hpp \
  /usr/local/include/fastdds/dds/core/status/DeadlineMissedStatus.hpp \
  /home/vetobox/Documents/veto_box/KeyDataModule.hpp \
+ /home/vetobox/Documents/veto_box/GpioPinSemaphore.hpp \
  /home/vetobox/Documents/veto_box/TestApplication.hpp \
  /usr/include/c++/12/csignal /usr/include/signal.h \
  /usr/include/aarch64-linux-gnu/bits/signum-generic.h \
