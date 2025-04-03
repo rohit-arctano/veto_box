@@ -4,7 +4,7 @@ std::string lastState1;
 std::string lastState2;
 std::string lastState3;
 bool interupt;
-std::int peridicTime;
+std::int16_t peridicTime;
 
 std::mutex mtx1;
 std::mutex mtx2;

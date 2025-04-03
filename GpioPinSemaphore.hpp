@@ -9,8 +9,7 @@ extern std::string lastState1;
 extern std::string lastState2;
 extern std::string lastState3;
 extern bool interupt;
-
-extern std::int peridicTime;
+extern std::int16_t peridicTime;
 
 extern std::mutex mtx1;
 extern std::mutex mtx2;

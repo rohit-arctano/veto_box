@@ -47,7 +47,7 @@ TestSubscriberApp::TestSubscriberApp(
 
     eprosima::fastdds::rtps::Locator_t remote_server_locator;
     remote_server_locator.kind = LOCATOR_KIND_UDPv4;
-    eprosima::fastdds::rtps::IPLocator::setIPv4(remote_server_locator, "192.168.10.100");
+    eprosima::fastdds::rtps::IPLocator::setIPv4(remote_server_locator, "192.168.10.100]");
     remote_server_locator.port = 56542;
     pqos.wire_protocol().builtin.discovery_config.m_DiscoveryServers.push_back(remote_server_locator);
 

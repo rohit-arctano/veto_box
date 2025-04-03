@@ -44,7 +44,10 @@
  
      // Create the participant
      DomainParticipantQos participant_qos;
-     participant_qos.name("TestParticipant");
+     participant_qos.name("Publisher");
+     participant_qos.properties().properties().emplace_back(
+        "fastdds.statistics", "RTPS_SENT_TOPIC");
+    
      std::cout << "Setting participant QoS..." << std::endl;
  
      // Enable server discovery protocol
@@ -166,43 +169,56 @@
  
  void TestPublisherApp::run()
  {
+     // Define a variable to store the last publish time
+     std::chrono::steady_clock::time_point lastPublishTime = std::chrono::steady_clock::now();
+ 
      while (!is_stopped())
      {
          if (publish()) // Assuming publish() triggers an event
          {
-             // Create an instance of KeyDataModule
-    
-             KeyDataModule obj(lastState1, lastState2, lastState3);
+             // Calculate time difference in microseconds
+             std::chrono::steady_clock::time_point currentPublishTime = std::chrono::steady_clock::now();
+             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(currentPublishTime - lastPublishTime).count();
+             
+             // Print time taken in microseconds
+             std::cout << "Time since last publish: " << duration << " µs" << std::endl;
  
+             // Update last publish time
+             lastPublishTime = currentPublishTime;
+ 
+             // Create an instance of KeyDataModule
+             KeyDataModule obj(lastState1, lastState2, lastState3);
+  
              // Display object values
              obj.display();
- 
-             // Optional: If you need to send/process obj in some way
-             processKeyData(obj);
          }
- 
+  
          // Wait for period or stop event
-         if(interupt){
-            std::lock_guard<std::mutex> lock(mtperiod);
-            peridicTime =0;
-            std::lock_guard<std::mutex> lock(mtIntrp);
-            interupt = false;
-
-         }else {
-            std::lock_guard<std::mutex> lock(mtperiod);
-            peridicTime =1;
+         if(interupt)
+         {
+             std::lock_guard<std::mutex> lock2(mtperiod);
+             peridicTime = 0;
+             std::lock_guard<std::mutex> lock(mtIntrp);
+             interupt = false;
          }
+         else
+         {
+             std::lock_guard<std::mutex> lock2(mtperiod);
+             peridicTime = 1000;
+         }
+         
          std::unique_lock<std::mutex> period_lock(mutex_);
          cv_.wait_for(period_lock, std::chrono::milliseconds(peridicTime), [this]()
-                      { return is_stopped(); });
+                       { return is_stopped(); });
      }
  }
+
  
  void TestPublisherApp::processKeyData(const KeyDataModule &data)
  {
      // Example processing or sending function
     //  std::cout << "Processing KeyDataModule: ";
-     data.display();
+    //  data.display();
  }
  
  bool TestPublisherApp::publish()

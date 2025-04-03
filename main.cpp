@@ -43,7 +43,7 @@ void gpioTask() {
     wiringPiISR(GPIO_INPUT_3, INT_EDGE_FALLING, &gpioCallback3);
 
     while (running) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
@@ -66,7 +66,7 @@ void pinMonitorTask() {
                 lastState1 = newState1;
                 std::lock_guard<std::mutex> lock(mtIntrp);
                 interupt =true;
-                std::lock_guard<std::mutex> lock(mtperiod);
+                std::lock_guard<std::mutex> lock2(mtperiod);
                 peridicTime =0;
 
                 // Lock for lastState1
@@ -80,7 +80,7 @@ void pinMonitorTask() {
                 lastState2 = newState2;
                 std::lock_guard<std::mutex> lock(mtIntrp);
                 interupt =true;
-                std::lock_guard<std::mutex> lock(mtperiod);
+                std::lock_guard<std::mutex> lock2(mtperiod);
                 peridicTime =0;
             }
         }
@@ -91,7 +91,7 @@ void pinMonitorTask() {
                 lastState3 = newState3;
                 std::lock_guard<std::mutex> lock(mtIntrp);
                 interupt =true;
-                std::lock_guard<std::mutex> lock(mtperiod);
+                std::lock_guard<std::mutex> lock2(mtperiod);
                 peridicTime =0;
             }
         }
